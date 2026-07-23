@@ -12,7 +12,7 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin("http://18.220.75.54");
+        config.addAllowedOrigin("http://52.14.249.233");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
