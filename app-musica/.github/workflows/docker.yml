@@ -1,0 +1,59 @@
+name: Construir y subir imagen Angular
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Nos movemos a la carpeta del frontend para instalar y construir
+      - name: Instalar dependencias
+        run: |
+          cd app-musica
+          npm install
+
+      - name: Construir Angular
+        run: |
+          cd app-musica
+          npm run build
+
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Construimos la imagen apuntando a la subcarpeta app-musica
+      - name: Construir imagen Docker
+        run: docker build -t rodcraxker/app-angular2:latest ./app-musica
+
+      - name: Subir imagen Docker Hub
+        run: docker push rodcraxker/app-angular2:latest
+
+      - name: Actualizar contenedor Angular en EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: 52.14.249.233
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo docker pull rodcraxker/app-angular2:latest
+            sudo docker stop app-angular || true
+            sudo docker rm app-angular || true
+            sudo docker run -d \
+              --name app-angular \
+              --network musica-aws \
+              -p 80:80 \
+              rodcraxker/app-angular2:latest
