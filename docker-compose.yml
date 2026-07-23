@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Base de Datos
+  postgres-db:
+    image: postgres:17
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: musica_db
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5433:5432" # Puerto 5433 en tu Mac mapeado al 5432 del contenedor
+
+  # Backend Spring Boot
+  api-spring:
+    build:
+      context: ./api-musica 
+    container_name: api-spring
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/musica_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123456
+    depends_on:
+      - postgres-db
+
+  # Frontend Angular
+  app-angular:
+    build:
+      context: ./app-musica 
+    container_name: app-angular
+    ports:
+      - "4200:80" # Mapea puerto 4200 del Mac al 80 del servidor web Nginx
+    depends_on:
+      - api-spring
