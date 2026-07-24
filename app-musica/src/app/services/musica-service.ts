@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Musica } from '../model/musica'; // Asegúrate de tener esta interfaz
+import { Musica } from '../model/musica';
 
 @Injectable({
   providedIn: 'root',
@@ -9,8 +9,8 @@ import { Musica } from '../model/musica'; // Asegúrate de tener esta interfaz
 export class MusicaService {
   private http = inject(HttpClient);
 
-  // La URL base debe coincidir con el @RequestMapping en tu controlador
-  private API_MUSICAS = 'http://18.220.75.54:8080/musicas';
+  // Usa la IP pública correcta de tu instancia EC2
+  private API_MUSICAS = 'http://52.14.249.233:8080/musicas';
 
   // Método GET: Listar todas
   getMusicas(): Observable<Musica[]> {
@@ -19,16 +19,18 @@ export class MusicaService {
 
   // Método POST: Guardar nueva
   postMusica(musica: Musica): Observable<Musica> {
-    return this.http.post<Musica>(`${this.API_MUSICAS}/guardar`, musica);
+    // Revisa si tu backend en Spring soporta POST directo a /musicas
+    // o si realmente definiste la ruta como /musicas/guardar
+    return this.http.post<Musica>(this.API_MUSICAS, musica);
   }
 
   // Método PUT: Actualizar
   putMusica(id: number, musica: Musica): Observable<Musica> {
-    return this.http.put<Musica>(`${this.API_MUSICAS}/actualizar/${id}`, musica);
+    return this.http.put<Musica>(`${this.API_MUSICAS}/${id}`, musica);
   }
 
   // Método DELETE: Eliminar
   deleteMusica(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_MUSICAS}/eliminar/${id}`);
+    return this.http.delete<void>(`${this.API_MUSICAS}/${id}`);
   }
 }
