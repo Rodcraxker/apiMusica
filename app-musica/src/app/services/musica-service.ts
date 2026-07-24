@@ -9,28 +9,26 @@ import { Musica } from '../model/musica';
 export class MusicaService {
   private http = inject(HttpClient);
 
-  // Usa la IP pública correcta de tu instancia EC2
+  // Endpoint base de tu EC2
   private API_MUSICAS = 'http://52.14.249.233:8080/musicas';
 
-  // Método GET: Listar todas
+  // GET: Listar todas (/musicas)
   getMusicas(): Observable<Musica[]> {
     return this.http.get<Musica[]>(this.API_MUSICAS);
   }
 
-  // Método POST: Guardar nueva
+  // POST: Guardar nueva (/musicas/guardar)
   postMusica(musica: Musica): Observable<Musica> {
-    // Revisa si tu backend en Spring soporta POST directo a /musicas
-    // o si realmente definiste la ruta como /musicas/guardar
-    return this.http.post<Musica>(this.API_MUSICAS, musica);
+    return this.http.post<Musica>(`${this.API_MUSICAS}/guardar`, musica);
   }
 
-  // Método PUT: Actualizar
+  // PUT: Actualizar (/musicas/actualizar/{id})
   putMusica(id: number, musica: Musica): Observable<Musica> {
-    return this.http.put<Musica>(`${this.API_MUSICAS}/${id}`, musica);
+    return this.http.put<Musica>(`${this.API_MUSICAS}/actualizar/${id}`, musica);
   }
 
-  // Método DELETE: Eliminar
+  // DELETE: Eliminar (/musicas/eliminar/{id})
   deleteMusica(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API_MUSICAS}/${id}`);
+    return this.http.delete<void>(`${this.API_MUSICAS}/eliminar/${id}`);
   }
 }
